@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: IBS Stock Core
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5422/ibs-stock-core
+    username: postgres
+    password: ilezzov
+    driver-class-name: org.postgresql.Driver
+
+
+
+
