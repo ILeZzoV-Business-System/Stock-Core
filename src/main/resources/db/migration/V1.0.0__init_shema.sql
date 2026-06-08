@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
-    email varchar(256) unique NOT NULL ,
+    email varchar(255) UNIQUE NOT NULL ,
     password_hash varchar(255) NOT NULL ,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL, 
@@ -41,9 +41,6 @@ CREATE TABLE permissions (
 CREATE TABLE users_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
-    created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
-    updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    version INT NOT NULL DEFAULT 0 ,
     PRIMARY KEY (user_id, role_id),
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
@@ -52,9 +49,6 @@ CREATE TABLE users_roles (
 CREATE TABLE roles_permissions (
     role_id BIGINT NOT NULL,
     permission_id BIGINT NOT NULL,
-    created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
-    updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL, 
-    version INT NOT NULL DEFAULT 0 ,
     PRIMARY KEY (role_id, permission_id),
     CONSTRAINT fk_rp_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
     CONSTRAINT fk_rp_permission FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
@@ -72,7 +66,7 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS marketplaces (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
     name varchar(63) NOT NULL UNIQUE ,
-    url varchar(256) NOT NULL UNIQUE ,
+    url varchar(255) NOT NULL UNIQUE ,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL, 
     version INT NOT NULL DEFAULT 0
@@ -80,11 +74,11 @@ CREATE TABLE IF NOT EXISTS marketplaces (
 
 CREATE TABLE IF NOT EXISTS products (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
-    category_id bigint REFERENCES categories(id) NOT NULL ,
     name varchar(63) UNIQUE NOT NULL ,
     status varchar(63) NOT NULL DEFAULT 'DRAFT' CHECK ( status in ('DRAFT', 'ACTIVE', 'OUT_OF_STOCK', 'HIDDEN', 'DISCOUNTED', 'ARCHIVED', 'ON_MARKETPLACE' )),
     price decimal(12, 2) NOT NULL DEFAULT 0 CHECK ( price >= 0 ) ,
     quantity integer NOT NULL DEFAULT 0 check ( quantity >= 0 ) ,
+    category_id bigint REFERENCES categories(id) NOT NULL ,
     marketplace_id bigint REFERENCES marketplaces(id) ,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL, 
@@ -105,7 +99,7 @@ CREATE TABLE IF NOT EXISTS contacts (
 
 CREATE TABLE IF NOT EXISTS suppliers (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
-    contact_id bigint REFERENCES contacts(id) NOT NULL UNIQUE ,
+    contact_id bigint REFERENCES contacts(id) ON DELETE CASCADE NOT NULL UNIQUE,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL ,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL, 
     version INT NOT NULL DEFAULT 0
